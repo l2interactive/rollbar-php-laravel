@@ -14,10 +14,19 @@ class MonologHandler extends RollbarHandler
         $this->app = $app;
     }
 
+    /**
+     * @param LogRecord $record
+     * @return void
+     */
     protected function write(LogRecord $record): void
     {
-        $record->context = $this->addContext($record->context);
-        parent::write($record);
+        parent::write(new LogRecord($record->datetime,
+            $record->channel,
+            $record->level,
+            $record->message,
+            (array_merge($record->toArray(), [ 'context' => $this->addContext($record->context) ])),
+            $record->extra,
+            $record->formatted));
     }
 
     /**
