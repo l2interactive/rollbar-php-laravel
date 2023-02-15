@@ -1,5 +1,5 @@
 {
-    "name": "rollbar/rollbar-laravel",
+    "name": "l2interactive/rollbar-laravel",
     "description": "Rollbar error monitoring integration for Laravel projects",
     "keywords": [
         "laravel",
