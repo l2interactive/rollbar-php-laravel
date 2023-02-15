@@ -3,6 +3,7 @@
 namespace Rollbar\Laravel;
 
 use Monolog\Handler\RollbarHandler;
+use Monolog\LogRecord;
 
 class MonologHandler extends RollbarHandler
 {
@@ -13,9 +14,9 @@ class MonologHandler extends RollbarHandler
         $this->app = $app;
     }
 
-    protected function write(array $record): void
+    protected function write(LogRecord $record): void
     {
-        $record['context'] = $this->addContext($record['context']);
+        $record->context = $this->addContext($record->context);
         parent::write($record);
     }
 
@@ -47,7 +48,7 @@ class MonologHandler extends RollbarHandler
                     } elseif (method_exists($data, 'getKey')) {
                         $person['id'] = $data->getKey();
                     }
-                    
+
                     if (isset($person['id'])) {
                         if (isset($data->username)) {
                             $person['username'] = $data->username;
