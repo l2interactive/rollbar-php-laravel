@@ -9,32 +9,41 @@ class MonologHandler extends RollbarHandler
 {
     protected $app;
 
+    /**
+     * @param $app
+     * @return void
+     */
     public function setApp($app)
     {
         $this->app = $app;
     }
 
     /**
-     * @param LogRecord $record
+     * @param array|LogRecord $record
      * @return void
      */
-    protected function write(LogRecord $record): void
+    protected function write(array|LogRecord $record): void
     {
-        parent::write(new LogRecord($record->datetime,
-            $record->channel,
-            $record->level,
-            $record->message,
-            (array_merge($record->toArray(), [ 'context' => $this->addContext($record->context) ])),
-            $record->extra,
-            $record->formatted));
+        if($record instanceof LogRecord) {
+            // We need to create a new instance of LogRecord because context is a readonly value
+            parent::write(new LogRecord($record->datetime,
+                $record->channel,
+                $record->level,
+                $record->message,
+                $this->addContext($record->context),
+                $record->extra,
+                $record->formatted));
+        } else {
+            $record['context'] = $this->addContext($record['context']);
+            parent::write($record);
+        }
     }
 
     /**
-     * Add Laravel specific information to the context.
-     *
      * @param array $context
+     * @return array
      */
-    protected function addContext(array $context = [])
+    protected function addContext(array $context = []): array
     {
         $config = $this->rollbarLogger->extend([]);
 
